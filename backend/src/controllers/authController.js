@@ -8,13 +8,14 @@ const validatePassword = (password) => {
     return regex.test(password);
 };
 
-// Generate JWT Token
+// Generate JWT Token (includes userId, email, role)
 const generateToken = (user) => {
-    return jwt.sign(
-        { id: user._id, email: user.email, role: user.role, name: user.name },
-        process.env.JWT_SECRET || 'your-secret-key',
-        { expiresIn: '24h' }
-    );
+    const payload = {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+    };
+    return jwt.sign(payload, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '24h' });
 };
 
 // Student Registration

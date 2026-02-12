@@ -48,7 +48,7 @@ export default function AdminRegister() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50 py-12 px-4">
+        <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-red-50 py-12 px-4">
             <div className="max-w-md mx-auto">
                 {/* Back Button */}
                 <button

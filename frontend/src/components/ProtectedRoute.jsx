@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router';
 
+
 export default function ProtectedRoute({ children, requiredRole }) {
     const { user, token } = useAuth();
     const navigate = useNavigate();
