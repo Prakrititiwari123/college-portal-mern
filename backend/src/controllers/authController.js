@@ -1,6 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/User.js';
+import PasswordResetToken from '../models/PasswordResetToken.js';
+import { sendMail } from '../utils/mailer.js';
 
 // Password validation function
 const validatePassword = (password) => {
@@ -284,5 +287,100 @@ export const loginAdmin = async (req, res) => {
     } catch (error) {
         console.error('Admin login error:', error);
         res.status(500).json({ message: 'Server error during login' });
+    }
+};
+
+// Forgot Password - generate token, store and send email
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ message: 'Email is required' });
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        // Always respond with success message to avoid leaking user existence
+        if (!user) {
+            return res.status(200).json({ message: 'Reset link sent to email' });
+        }
+
+        // Generate token
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour
+
+        // Save token
+        await PasswordResetToken.create({ userId: user._id, token, expiresAt });
+
+        // Send email (link to frontend reset page or backend endpoint)
+        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
+        const subject = 'Password reset request';
+        const text = `You requested a password reset. Use the link below to reset your password (valid for 1 hour):\n\n${resetLink}`;
+
+        await sendMail({ to: user.email, subject, text });
+
+        return res.status(200).json({ message: 'Reset link sent to email' });
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Reset Password using token
+export const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) return res.status(400).json({ message: 'Token and newPassword are required' });
+
+        const tokenDoc = await PasswordResetToken.findOne({ token });
+        if (!tokenDoc) return res.status(400).json({ message: 'Invalid or expired token' });
+        if (tokenDoc.expiresAt < new Date()) {
+            await PasswordResetToken.deleteOne({ _id: tokenDoc._id });
+            return res.status(400).json({ message: 'Token expired' });
+        }
+
+        if (!validatePassword(newPassword)) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters, contain 1 uppercase letter, 1 number, and 1 special character' });
+        }
+
+        const user = await User.findById(tokenDoc.userId);
+        if (!user) return res.status(400).json({ message: 'User not found' });
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        // consume token
+        await PasswordResetToken.deleteOne({ _id: tokenDoc._id });
+
+        return res.status(200).json({ message: 'Password reset successful' });
+    } catch (err) {
+        console.error('Reset password error:', err);
+        return res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Change password - authenticated
+export const changePassword = async (req, res) => {
+    try {
+        const userId = req.user?.userId;
+        const { oldPassword, newPassword } = req.body;
+
+        if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+        if (!oldPassword || !newPassword) return res.status(400).json({ message: 'Old and new password required' });
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) return res.status(401).json({ message: 'Old password incorrect' });
+
+        if (!validatePassword(newPassword)) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters, contain 1 uppercase letter, 1 number, and 1 special character' });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+
+        return res.status(200).json({ message: 'Password changed successfully' });
+    } catch (err) {
+        console.error('Change password error:', err);
+        return res.status(500).json({ message: 'Server error' });
     }
 };

@@ -37,6 +37,16 @@ const userSchema = new mongoose.Schema({
             return this.role === 'STUDENT';
         },
     },
+    // Optional academic/profile fields
+    roll_no: {
+        type: String,
+    },
+    semester: {
+        type: Number,
+    },
+    address: {
+        type: String,
+    },
     // Faculty specific fields
     department: {
         type: String,

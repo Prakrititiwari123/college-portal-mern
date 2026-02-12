@@ -12,6 +12,10 @@ import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
 import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ChangePassword from './pages/ChangePassword';
+import StudentProfile from './pages/StudentProfile';
 
 function App() {
     return (
@@ -30,6 +34,12 @@ function App() {
                     {/* Login Routes */}
                     <Route path="/login/:role" element={<Login />} />
                     <Route path="/login" element={<Navigate to="/" replace />} />
+
+                    {/* Password & Profile */}
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/change-password" element={<ChangePassword />} />
+                    <Route path="/student-profile" element={<StudentProfile />} />
 
                     {/* Dashboard Routes - Protected */}
                     <Route

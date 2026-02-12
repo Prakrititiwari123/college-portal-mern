@@ -6,7 +6,11 @@ import {
     loginStudent,
     loginFaculty,
     loginAdmin,
+    forgotPassword,
+    resetPassword,
+    changePassword,
 } from '../controllers/authController.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -21,5 +25,12 @@ router.post('/faculty/login', loginFaculty);
 // Admin Registration and Login
 router.post('/admin/register', registerAdmin);
 router.post('/admin/login', loginAdmin);
+
+// Password reset
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+
+// Change password (authenticated)
+router.post('/change-password', verifyToken, changePassword);
 
 export default router;

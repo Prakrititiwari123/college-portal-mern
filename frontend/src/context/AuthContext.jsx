@@ -14,6 +14,17 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser && !user) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, []);
+
     const login = (userData, tokenData) => {
         setUser(userData);
         setToken(tokenData);
@@ -78,8 +89,39 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const authFetch = async (url, options = {}) => {
+        const headers = options.headers || {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+
+        const response = await fetch(url, { ...options, headers });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Request failed');
+        return data;
+    };
+
+    const forgotPassword = async (email) => {
+        return await authFetch(`${API_URL}/api/auth/forgot-password`, { method: 'POST', body: JSON.stringify({ email }) });
+    };
+
+    const resetPassword = async (tokenParam, newPassword) => {
+        return await authFetch(`${API_URL}/api/auth/reset-password`, { method: 'POST', body: JSON.stringify({ token: tokenParam, newPassword }) });
+    };
+
+    const changePassword = async (oldPassword, newPassword) => {
+        return await authFetch(`${API_URL}/api/auth/change-password`, { method: 'POST', body: JSON.stringify({ oldPassword, newPassword }) });
+    };
+
+    const getProfile = async () => {
+        return await authFetch(`${API_URL}/api/student/profile`, { method: 'GET' });
+    };
+
+    const updateProfile = async (updates) => {
+        return await authFetch(`${API_URL}/api/student/profile`, { method: 'PUT', body: JSON.stringify(updates) });
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, loading, error, register, loginUser, logout }}>
+        <AuthContext.Provider value={{ user, token, loading, error, register, loginUser, logout, forgotPassword, resetPassword, changePassword, getProfile, updateProfile, setUser }}>
             {children}
         </AuthContext.Provider>
     );

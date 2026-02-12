@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { FaUser, FaBookReader, FaChalkboardTeacher, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -8,21 +8,26 @@ export default function Home() {
     const { user, token } = useAuth();
     const [showMenu, setShowMenu] = useState(false);
 
-    if (token && user) {
-        switch (user.role) {
-            case 'STUDENT':
-                return navigate('/student-dashboard');
-            case 'FACULTY':
-                return navigate('/faculty-dashboard');
-            case 'ADMIN':
-                return navigate('/admin-dashboard');
-            default:
-                break;
+    useEffect(() => {
+        if (token && user) {
+            switch (user.role) {
+                case 'STUDENT':
+                    navigate('/student-dashboard');
+                    break;
+                case 'FACULTY':
+                    navigate('/faculty-dashboard');
+                    break;
+                case 'ADMIN':
+                    navigate('/admin-dashboard');
+                    break;
+                default:
+                    break;
+            }
         }
-    }
+    }, [token, user, navigate]);
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
             {/* Navigation */}
             <nav className="bg-white shadow-md">
                 <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
