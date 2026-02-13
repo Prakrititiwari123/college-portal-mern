@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import { sendMail } from '../utils/mailer.js';
 
 export const getStudentProfile = async (req, res) => {
     try {
@@ -33,6 +34,15 @@ export const updateStudentProfile = async (req, res) => {
 
         const user = await User.findByIdAndUpdate(userId, updates, { new: true }).select('-password -__v');
         if (!user) return res.status(404).json({ message: 'Student not found' });
+
+        // Send notification email about profile updates (best-effort)
+        try {
+            const changed = Object.keys(updates).map(k => `${k}: ${updates[k]}`).join('\n');
+            const text = `Your profile was updated. The following fields changed:\n\n${changed}`;
+            await sendMail({ to: user.email, subject: 'Profile updated', text });
+        } catch (mailErr) {
+            console.error('Failed to send profile update email:', mailErr);
+        }
 
         return res.status(200).json({ message: 'Profile updated', user });
     } catch (err) {
