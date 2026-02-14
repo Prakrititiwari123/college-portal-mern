@@ -5,17 +5,14 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages
 import Home from './pages/Home';
-import StudentRegister from './pages/StudentRegister';
-import FacultyRegister from './pages/FacultyRegister';
-import AdminRegister from './pages/AdminRegister';
+import Register from './pages/Register';
 import Login from './pages/Login';
-import StudentDashboard from './pages/StudentDashboard';
-import FacultyDashboard from './pages/FacultyDashboard';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import FacultyDashboard from './pages/FacultyDashboard/FacultyDashboard';
+import StudentDashboard from './pages/StudentDashboard/StudentDashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePassword';
-import StudentProfile from './pages/StudentProfile';
 
 function App() {
     return (
@@ -26,20 +23,16 @@ function App() {
                     <Route path="/" element={<Home />} />
 
                     {/* Registration Routes */}
-                    <Route path="/register/student" element={<StudentRegister />} />
-                    <Route path="/register/faculty" element={<FacultyRegister />} />
-                    <Route path="/register/admin" element={<AdminRegister />} />
-                    <Route path="/register" element={<Navigate to="/" replace />} />
+                    <Route path="/register" element={<Register />} />
 
                     {/* Login Routes */}
                     <Route path="/login/:role" element={<Login />} />
                     <Route path="/login" element={<Navigate to="/" replace />} />
 
-                    {/* Password & Profile */}
+                    {/* Password Management */}
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/change-password" element={<ChangePassword />} />
-                    <Route path="/student-profile" element={<StudentProfile />} />
 
                     {/* Dashboard Routes - Protected */}
                     <Route

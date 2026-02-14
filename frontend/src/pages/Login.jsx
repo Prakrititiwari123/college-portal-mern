@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useAuth } from "../context/AuthContext";
-import { FaEye, FaEyeSlash, FaArrowLeft, FaLock } from "react-icons/fa";
-import ForgotPasswordModal from "../components/modal/ForgotPasswordModal";
+import toast from "react-hot-toast";
+import { FaEye, FaEyeSlash, FaArrowLeft, FaLock, FaEnvelope } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
   const { role } = useParams();
-  const { loginUser } = useAuth();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [validationError, setValidationError] = useState({});
 
   const [credentials, setCredentials] = useState({
     email: "",
@@ -23,29 +22,41 @@ export default function Login() {
       case "student":
         return {
           title: "Student Login",
-          endpoint: "/student/login",
+          subtitle: "Access your courses, grades, and academic records",
+          role: "student",
           bgColor: "from-blue-50 via-indigo-50 to-purple-50",
-          buttonColor: "bg-blue-500 hover:bg-blue-600",
-          accentColor: "text-blue-600 border-blue-500",
-          registerLink: "/register/student",
+          buttonColor: "from-blue-600 to-blue-700",
+          buttonHover: "from-blue-700 to-blue-800",
+          accentColor: "text-blue-600",
+          borderColor: "border-blue-500",
+          focusRing: "focus:border-blue-500 focus:ring-blue-200",
+          registerLink: "/register",
         };
       case "faculty":
         return {
           title: "Faculty Login",
-          endpoint: "/faculty/login",
+          subtitle: "Manage courses, grades, and student records",
+          role: "faculty",
           bgColor: "from-green-50 via-emerald-50 to-teal-50",
-          buttonColor: "bg-green-500 hover:bg-green-600",
-          accentColor: "text-green-600 border-green-500",
-          registerLink: "/register/faculty",
+          buttonColor: "from-green-600 to-green-700",
+          buttonHover: "from-green-700 to-green-800",
+          accentColor: "text-green-600",
+          borderColor: "border-green-500",
+          focusRing: "focus:border-green-500 focus:ring-green-200",
+          registerLink: "/register",
         };
       case "admin":
         return {
           title: "Admin Login",
-          endpoint: "/admin/login",
+          subtitle: "Manage users, departments, and system settings",
+          role: "admin",
           bgColor: "from-purple-50 via-pink-50 to-red-50",
-          buttonColor: "bg-purple-500 hover:bg-purple-600",
-          accentColor: "text-purple-600 border-purple-500",
-          registerLink: "/register/admin",
+          buttonColor: "from-purple-600 to-purple-700",
+          buttonHover: "from-purple-700 to-purple-800",
+          accentColor: "text-purple-600",
+          borderColor: "border-purple-500",
+          focusRing: "focus:border-purple-500 focus:ring-purple-200",
+          registerLink: "/register",
         };
       default:
         return {};
@@ -55,137 +66,178 @@ export default function Login() {
   const config = getConfig();
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setCredentials({
       ...credentials,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
-    setError("");
+    if (validationError[name]) {
+      setValidationError((prev) => {
+        const updated = { ...prev };
+        delete updated[name];
+        return updated;
+      });
+    }
+  };
+
+  const validate = () => {
+    let errors = {};
+
+    if (!credentials.email) {
+      errors.email = "Email is required";
+    } else if (!/^[\w\.]+@[\w\.]+(\.[\w])+$/.test(credentials.email)) {
+      errors.email = "Please enter a valid email";
+    }
+
+    if (!credentials.password) {
+      errors.password = "Password is required";
+    } else if (credentials.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+
+    setValidationError(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // if (!validate()) {
+    //   toast.error("Please fill all fields correctly");
+      
+    //   return;
+    // }
+
     setLoading(true);
-    setError("");
 
     try {
-      const result = await loginUser(config.endpoint, credentials);
-      // Redirect based on role
-      switch (result.role) {
-        case "STUDENT":
-          navigate("/student-dashboard");
-          break;
-        case "FACULTY":
-          navigate("/faculty-dashboard");
-          break;
-        case "ADMIN":
-          navigate("/admin-dashboard");
-          break;
-        default:
-          navigate("/");
+      const result = await login(
+        credentials.email,
+        credentials.password,
+        config.role
+      );
+      if (result.success) {
+        toast.success("Login successful!");
+        switch (config.role) {
+          case "student":
+            navigate("/student-dashboard");
+            break;
+          case "faculty":
+            navigate("/faculty-dashboard");
+            break;
+          case "admin":
+            navigate("/admin-dashboard");
+            break;
+          default:
+            navigate("/");
+        }
+      } else {
+        toast.error(result.error || "Login failed");
+        console.log(result.error);
+        
+        
       }
     } catch (err) {
-      setError(err.message || "Login failed");
+      console.log(err);
+      toast.error(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <div
-        className={`min-h-screen bg-gradient-to-br ${config.bgColor} py-12 px-4`}
-      >
-        <div className="max-w-md mx-auto">
-          {/* Back Button */}
-          <button
-            onClick={() => navigate("/")}
-            className={`flex items-center gap-2 ${config.accentColor} hover:opacity-80 mb-8 font-semibold`}
-          >
-            <FaArrowLeft /> Back to Home
-          </button>
+    <div className={`min-h-screen bg-gradient-to-br ${config.bgColor} py-12 px-4`}>
+      <div className="max-w-md mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate("/")}
+          className={`flex items-center gap-2 ${config.accentColor} hover:opacity-80 mb-8 font-semibold transition`}
+        >
+          <FaArrowLeft /> Back to Home
+        </button>
 
-          {/* Login Card */}
-          <div className="bg-white rounded-xl shadow-2xl p-8">
+        {/* Login Card */}
+        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+          <div className="p-8">
+            {/* Icon and Header */}
             <div className="flex justify-center mb-4">
-              <FaLock className="text-4xl text-indigo-600" />
+              <div className={`p-4 rounded-full bg-gradient-to-br ${config.buttonColor} bg-opacity-10`}>
+                <FaLock className={`text-5xl ${config.accentColor}`} />
+              </div>
             </div>
+
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
               {config.title}
             </h2>
-            <p className="text-center text-gray-600 text-sm mb-6">
-              Access your college portal securely
+            <p className="text-center text-gray-600 text-sm mb-8">
+              {config.subtitle}
             </p>
 
-            {error && (
-              <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded mb-6 flex items-start">
-                <span className="mr-3">⚠️</span>
-                <span>{error}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Field */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  📧 Email Address
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={credentials.email}
-                  onChange={handleChange}
-                  placeholder="your.email@college.edu"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                  required
-                  autoComplete="email"
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  🔒 Password
+                  Email Address
                 </label>
                 <div className="relative">
+                  <FaEnvelope className="absolute left-4 top-3.5 text-gray-400" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={credentials.email}
+                    onChange={handleChange}
+                    placeholder="your.email@college.edu"
+                    className={`w-full pl-10 pr-4 py-3 border-2 ${config.borderColor} rounded-lg focus:outline-none ${config.focusRing} transition bg-gray-50 hover:bg-white disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                {validationError.email && (
+                  <span className="text-xs text-red-500 mt-1 block">
+                    {validationError.email}
+                  </span>
+                )}
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <FaLock className="absolute left-4 top-3.5 text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={credentials.password}
                     onChange={handleChange}
-                    placeholder="Enter your password"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
+                    placeholder="••••••••"
+                    className={`w-full pl-10 pr-12 py-3 border-2 ${config.borderColor} rounded-lg focus:outline-none ${config.focusRing} transition bg-gray-50 hover:bg-white disabled:bg-gray-200 disabled:cursor-not-allowed`}
+                    disabled={loading}
                     required
-                    autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-600 hover:text-gray-800 text-lg"
+                    className="absolute right-3 top-3.5 text-gray-600 hover:text-gray-800 transition"
                   >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
                 </div>
+                {validationError.password && (
+                  <span className="text-xs text-red-500 mt-1 block">
+                    {validationError.password}
+                  </span>
+                )}
               </div>
 
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-2 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="ml-2 text-sm text-gray-700 cursor-pointer"
-                  >
-                    Remember me
-                  </label>
-                </div>
+              {/* Forgot Password Link */}
+              <div className="text-right">
                 <button
                   type="button"
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                  onClick={() => setShowForgotModal(true)}
+                  onClick={() => navigate("/forgot-password")}
+                  className={`text-sm ${config.accentColor} hover:underline font-semibold transition`}
                 >
                   Forgot password?
                 </button>
@@ -195,38 +247,30 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 ${config.buttonColor} text-white font-bold rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed transition transform hover:scale-105 active:scale-95 mt-6`}
+                className={`w-full py-3 bg-gradient-to-r ${config.buttonColor} hover:${config.buttonHover} text-white font-bold rounded-lg transition transform hover:scale-105 active:scale-95 disabled:scale-100 disabled:bg-gray-400 disabled:cursor-not-allowed mt-8`}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="animate-spin">⏳</span> Logging in...
-                  </span>
-                ) : (
-                  "Login"
-                )}
+                {loading ? "Logging in..." : "Login"}
               </button>
             </form>
 
             {/* Register Link */}
-            <div className="border-t border-gray-200 pt-6 mt-6">
-              <p className="text-center text-gray-600">
-                Don't have an account?{" "}
-                <button
-                  onClick={() => navigate(config.registerLink)}
-                  className={`${config.accentColor} hover:underline font-bold`}
-                >
-                  Register here
-                </button>
-              </p>
-            </div>
+            <p className="text-center text-gray-600 mt-6 text-sm">
+              Don't have an account?{" "}
+              <button
+                onClick={() => navigate(config.registerLink)}
+                className={`${config.accentColor} hover:underline font-bold transition`}
+              >
+                Register Now
+              </button>
+            </p>
           </div>
         </div>
-      </div>
 
-      <ForgotPasswordModal
-        isOpen={showForgotModal}
-        onClose={() => setShowForgotModal(false)}
-      />
-    </>
+        {/* Footer Note */}
+        <p className="text-center text-gray-600 mt-8 text-xs">
+          For security, never share your password with anyone
+        </p>
+      </div>
+    </div>
   );
 }

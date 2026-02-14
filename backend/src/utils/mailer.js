@@ -1,13 +1,13 @@
 import nodemailer from 'nodemailer';
 
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = process.env.SMTP_PORT;
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.gmail.com';
+const SMTP_PORT = process.env.SMTP_PORT || 587;
+const SMTP_USER = process.env.SMTP_USER || process.env.EMAIL_USER;
+const SMTP_PASS = process.env.SMTP_PASS || process.env.EMAIL_PASS;
 
 let transporter = null;
 
-if (SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS) {
+if (SMTP_USER && SMTP_PASS) {
     transporter = nodemailer.createTransport({
         host: SMTP_HOST,
         port: Number(SMTP_PORT),
@@ -24,14 +24,17 @@ if (SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS) {
 
 export const sendMail = async ({ to, subject, text, html }) => {
     if (!transporter) {
-        console.log('Email (dev mode) - to:', to);
+        console.log('=== EMAIL (DEV MODE) ===');
+        console.log('To:', to);
         console.log('Subject:', subject);
         console.log('Text:', text);
+        console.log('HTML:', html);
+        console.log('========================');
         return;
     }
 
     await transporter.sendMail({
-        from: process.env.EMAIL_FROM || SMTP_USER,
+        from: SMTP_USER,
         to,
         subject,
         text,

@@ -2,8 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import authRoutes from './src/routes/authRoutes.js';
-import studentRoutes from './src/routes/studentRoutes.js';
+import authRoutes from './src/routes/auth/authRoutes.js';
+import adminRoutes from './src/routes/admin/adminRoutes.js';
+import facultyRoutes from './src/routes/faculty/facultyRoutes.js';
+import studentRoutes from './src/routes/student/studentRoutes.js';
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/faculty', facultyRoutes);
 app.use('/api/student', studentRoutes);
 
 // Health check
