@@ -599,11 +599,11 @@ export const UserGenOTP = async (req, res) => {
       <p>If you didn't request this, please ignore this email.</p>
     `;
 
+  
     await sendMail({
-      to: email,
+      email,
       subject,
-      html,
-      text: `Your OTP for password reset is: ${otp}. This will expire in 10 minutes.`,
+      html
     });
 
     res.status(200).json({ 

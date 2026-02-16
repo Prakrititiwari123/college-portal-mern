@@ -44,8 +44,13 @@ router.post("/register", UserRegister);
 router.post("/login", UserLogin);
 router.get("/logout", UserLogout);
 
-router.post("/genOtp", UserGenOTP);
-router.post("/verifyOtp", UserVerifyOtp);
-router.post("/forgot-password", OtpProtect, UserForgetPassword); 
+router.post("/gen-otp", UserGenOTP);
+router.post("/verify-otp", UserVerifyOtp);
+router.post("/reset-password", UserForgetPassword);
+
+
+// router.post("/genOtp", UserGenOTP);
+// router.post("/verifyOtp", UserVerifyOtp);
+// router.post("/forgot-password", OtpProtect, UserForgetPassword); 
 
 export default router;

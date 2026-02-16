@@ -22,13 +22,12 @@ function App() {
            
                 <Routes>
                     {/* Home */}
-                    <Route path="/" element={<Home />} />
-
+                    <Route path="/" element={!user?<Home />: <Navigate to={`/${user.role.toLowerCase()}-dashboard`} replace  />} />
                     {/* Registration Routes */}
-                    <Route path="/register" element={<Register />} />
+                    <Route path="/register" element={!user ? <Register /> : <Navigate to={`/${user.role.toLowerCase()}-dashboard`} replace  />} />
 
                     {/* Login Routes */}
-                    <Route path="/login/:role" element={<Login />} />
+                    <Route path="/login/:role" element={!user?<Login />:<Navigate to={`/${user.role.toLowerCase()}-dashboard`} replace />} />
                     <Route path="/login" element={<Navigate to="/" replace />} />
 
                     {/* Password Management */}

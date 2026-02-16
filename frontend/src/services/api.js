@@ -28,9 +28,13 @@ export const authService = {
   getProfile: (userType) => api.get(`/auth/${userType}/profile`),
   updateProfile: (userType, data) => api.put(`/auth/${userType}/profile`, data),
   changePassword: (data) => api.post('/auth/change-password', data),
-  forgotPassword: (data) => api.post('/auth/forgot-password', data),
-  verifyOTP: (data) => api.post('/auth/verify-otp', data),
-  resetPassword: (data) => api.post('/auth/reset-password', data),
+  genOtp: (data) => api.post('/auth/gen-otp', data),
+verifyOtp: (data) => api.post('/auth/verify-otp', data),
+resetPassword: (data) => api.post('/auth/reset-password', data),
+
+  // forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  // verifyOTP: (data) => api.post('/auth/verify-otp', data),
+  // resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 // Course Services

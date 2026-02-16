@@ -70,7 +70,9 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await authService.forgotPassword({ email });
+      // const response = await authService.forgotPassword({ email });
+      const response = await authService.genOtp({ email });
+
       setStep(2);
       toast.success(response.data.message || "OTP sent to your email!");
     } catch (err) {
@@ -92,7 +94,9 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await authService.verifyOTP({ email, otp });
+      // const response = await authService.verifyOTP({ email, otp });
+      const response = await authService.verifyOtp({ email, otp });
+
       setStep(3);
       toast.success(response.data.message || "OTP verified successfully!");
     } catch (err) {
@@ -114,7 +118,9 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
+      // const response = await authService.resetPassword({ email, otp, newPassword });
       const response = await authService.resetPassword({ email, otp, newPassword });
+
       setSuccess(true);
       toast.success(response.data.message || "Password reset successful!");
       setTimeout(() => {
