@@ -1,7 +1,6 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import React, { use, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Pages
 import Home from './pages/Home';
@@ -15,9 +14,12 @@ import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePassword';
 
 function App() {
+    const { user } = useAuth();
+   
+    
     return (
         <Router>
-            <AuthProvider>
+           
                 <Routes>
                     {/* Home */}
                     <Route path="/" element={<Home />} />
@@ -37,33 +39,22 @@ function App() {
                     {/* Dashboard Routes - Protected */}
                     <Route
                         path="/student-dashboard"
-                        element={
-                            <ProtectedRoute requiredRole="STUDENT">
-                                <StudentDashboard />
-                            </ProtectedRoute>
-                        }
+                        element={user?.role === "Student" ? <StudentDashboard /> : <Navigate to="/login/student" replace />}
                     />
                     <Route
                         path="/faculty-dashboard"
-                        element={
-                            <ProtectedRoute requiredRole="FACULTY">
-                                <FacultyDashboard />
-                            </ProtectedRoute>
-                        }
+                        element={user?.role === "Faculty" ? <FacultyDashboard /> : <Navigate to="/login/faculty" replace />}
                     />
                     <Route
                         path="/admin-dashboard"
                         element={
-                            <ProtectedRoute requiredRole="ADMIN">
-                                <AdminDashboard />
-                            </ProtectedRoute>
+                            user?.role === "Admin" ? <AdminDashboard /> : <Navigate to="/login/admin" replace />
                         }
                     />
 
                     {/* Catch all */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
-            </AuthProvider>
         </Router>
     );
 }

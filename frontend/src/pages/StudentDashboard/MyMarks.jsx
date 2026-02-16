@@ -13,7 +13,7 @@ const MyMarks = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/student/marks`,
+        `${import.meta.env.VITE_API_URL}/api/student/marks`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

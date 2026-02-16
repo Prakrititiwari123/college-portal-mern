@@ -210,7 +210,7 @@ const Register = () => {
                         Faculty
                       </label>
                     </div>
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                       <input
                         type="radio"
                         name="role"
@@ -223,7 +223,7 @@ const Register = () => {
                       <label htmlFor="admin" className="cursor-pointer">
                         Admin
                       </label>
-                    </div>
+                    </div> */}
                   </div>
                   {validationError.role && (
                     <span className="text-xs text-red-500">

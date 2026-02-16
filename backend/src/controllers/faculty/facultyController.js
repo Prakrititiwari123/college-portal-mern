@@ -5,7 +5,7 @@
  */
 export const getAssignedCourses = async (req, res) => {
   try {
-    const facultyId = req.user.id;
+    const facultyId = req.user;
     // TODO: Fetch courses assigned to this faculty
     res.status(200).json({ message: "Assigned courses fetched successfully" });
   } catch (error) {

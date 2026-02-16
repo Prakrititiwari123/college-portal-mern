@@ -102,6 +102,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    
+
     // if (!validate()) {
     //   toast.error("Please fill all fields correctly");
       
@@ -116,16 +118,18 @@ export default function Login() {
         credentials.password,
         config.role
       );
+    
+      
       if (result.success) {
         toast.success("Login successful!");
-        switch (config.role) {
-          case "student":
+        switch (result.role) {
+          case "Student":
             navigate("/student-dashboard");
             break;
-          case "faculty":
+          case "Faculty":
             navigate("/faculty-dashboard");
             break;
-          case "admin":
+          case "Admin":
             navigate("/admin-dashboard");
             break;
           default:

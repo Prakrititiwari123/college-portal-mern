@@ -8,6 +8,7 @@ import PaymentHistory from './PaymentHistory';
 
 const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState('courses');
+  
 
   const tabs = [
     { id: 'courses', label: 'My Courses', icon: '📚' },

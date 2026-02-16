@@ -13,7 +13,7 @@ const MyCourses = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/student/courses`,
+        `${import.meta.env.VITE_API_URL}/api/student/courses`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

@@ -8,7 +8,7 @@ const facultySchema = new mongoose.Schema({
   password_hash: { type: String, required: true },
   designation: { 
     type: String, 
-    enum: ['Professor', 'Associate Professor', 'Assistant Professor'],
+    enum: ['Professor', 'Associate Professor', 'Assistant Professor','Lecturer'],
     required: true 
   },
   department: { 

@@ -13,7 +13,7 @@ const PaymentHistory = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/student/payment-history`,
+        `${import.meta.env.VITE_API_URL}/api/student/payment-history`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }

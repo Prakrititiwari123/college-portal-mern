@@ -5,9 +5,10 @@
  */
 export const getProfile = async (req, res) => {
   try {
-    const studentId = req.user.id;
+    const student = req.user;
+    
     // TODO: Fetch student profile from database
-    res.status(200).json({ message: "Profile fetched successfully" });
+    res.status(200).json({ message: "Profile fetched successfully", student });
   } catch (error) {
     res.status(500).json({
       success: false,

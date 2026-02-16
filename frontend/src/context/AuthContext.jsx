@@ -21,10 +21,11 @@ export const AuthProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       // Try to fetch user profile from auth/student/profile or similar endpoint
-      const response = await axios.get('http://localhost:5000/api/auth/student/profile', {
+      const response = await axios.get('http://localhost:5000/api/student/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUser(response.data);
+      
+      setUser(response.data.student);
     } catch (error) {
       console.error('Fetch user error:', error);
       logout();

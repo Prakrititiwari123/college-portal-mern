@@ -136,6 +136,7 @@ export const login = (userType) => async (req, res) => {
 
     res.json({
       token,
+      success: true,
       type: 'Bearer',
       userId: user._id,
       email: user.email,

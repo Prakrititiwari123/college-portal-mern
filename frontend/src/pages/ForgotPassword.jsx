@@ -63,9 +63,9 @@ export default function ForgotPassword() {
   const handleSendOTP = async (e) => {
     e.preventDefault();
 
-    if (!validateEmail()) {
-      return;
-    }
+    // if (!validateEmail()) {
+    //   return;
+    // }
 
     setLoading(true);
 
