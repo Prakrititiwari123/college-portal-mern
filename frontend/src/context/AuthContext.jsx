@@ -10,13 +10,28 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
+  // useEffect(() => {
+  //   if (token) {
+  //     fetchUser();
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [token]);
+
   useEffect(() => {
     if (token) {
-      fetchUser();
-    } else {
+       const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));  // User set karo without API call
       setLoading(false);
+    } else {
+      fetchUser();  // Agar saved user nahi hai tabhi API call karo
     }
-  }, [token]);
+  } else {
+    setLoading(false);
+  }
+}, [token]);
+
 
   const fetchUser = async () => {
     try {
@@ -35,6 +50,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password, role) => {
+    // try {
+    //   const response = await axios.post(
+    //     `https://college-portal-mern-backend.onrender.com/api/auth/${role}/login`,
+    //     { email, password },
+    //     { headers: { 'Content-Type': 'application/json' } }
+    //   );
+      
+    //   const { token: newToken, ...userData } = response.data;
+    //   localStorage.setItem('token', newToken);
+    //   setToken(newToken);
+    //   setUser(userData);
     try {
       const response = await axios.post(
         `https://college-portal-mern-backend.onrender.com/api/auth/${role}/login`,
@@ -44,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       
       const { token: newToken, ...userData } = response.data;
       localStorage.setItem('token', newToken);
+      localStorage.setItem('user', JSON.stringify(userData));
       setToken(newToken);
       setUser(userData);
       
@@ -58,6 +85,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');  //new line to remove user data on logout
     setToken(null);
     setUser(null);
   };
