@@ -12,7 +12,10 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'https://collegefrontendpro.netlify.app', // Adjust as needed for production
+    credentials: true,
+}));
 app.use(express.json());
 
 // MongoDB Connection
