@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUser = async () => {
     try {
       // Try to fetch user profile from auth/student/profile or similar endpoint
-      const response = await axios.get('http://localhost:5000/api/student/profile', {
+      const response = await axios.get('https://college-portal-mern-backend.onrender.com/api/student/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, role) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/auth/${role}/login`,
+        `https://college-portal-mern-backend.onrender.com/api/auth/${role}/login`,
         { email, password },
         { headers: { 'Content-Type': 'application/json' } }
       );
