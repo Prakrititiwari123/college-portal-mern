@@ -150,7 +150,7 @@ export default function Login() {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${config.bgColor} py-12 px-4`}>
+    <div className={`min-h-screen bg-linear-to-br ${config.bgColor} py-12 px-4`}>
       <div className="max-w-md mx-auto">
         {/* Back Button */}
         <button
@@ -165,7 +165,7 @@ export default function Login() {
           <div className="p-8">
             {/* Icon and Header */}
             <div className="flex justify-center mb-4">
-              <div className={`p-4 rounded-full bg-gradient-to-br ${config.buttonColor} bg-opacity-10`}>
+              <div className={`p-4 rounded-full bg-linear-to-br ${config.buttonColor} bg-opacity-10`}>
                 <FaLock className={`text-5xl ${config.accentColor}`} />
               </div>
             </div>
@@ -251,7 +251,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r ${config.buttonColor} hover:${config.buttonHover} text-white font-bold rounded-lg transition transform hover:scale-105 active:scale-95 disabled:scale-100 disabled:bg-gray-400 disabled:cursor-not-allowed mt-8`}
+                className={`w-full py-3 bg-linear-to-r ${config.buttonColor} hover:${config.buttonHover} text-white font-bold rounded-lg transition transform hover:scale-105 active:scale-95 disabled:scale-100 disabled:bg-gray-400 disabled:cursor-not-allowed mt-8`}
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
